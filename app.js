@@ -1,14 +1,13 @@
-// const http = require('http');
 const path = require('path');
 
 const express = require('express');
 const bodyParser = require('body-parser');
 
 const adminRoutes = require('./routes/admin');
-// const shopRoutes = require('./routes/shop');
+const shopRoutes = require('./routes/shop');
 const errorController = require('./controllers/errors');
 
-//gwt a DB connection - mongoConnection is d function in database.js that connects to our DB
+//get a DB connection - mongoConnection is d function in database.js that connects to our DB
 const mongoConnection = require('./utils/database').mongoConnection;
 
 
@@ -31,7 +30,7 @@ app.use((req, res, next) => {
 })
 
 app.use(adminRoutes);
-// app.use(shopRoutes);
+app.use(shopRoutes);
 
 app.use(errorController.get404);
 

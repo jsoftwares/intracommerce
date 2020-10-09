@@ -5,17 +5,17 @@ const MongoClient = mongodb.MongoClient;	//extract MongoClient constructor from 
 let _db;
 
 //Using d MongoClient to connect to mongoDB database, connect() returns a promise. this function connects
-//to d DD & storing d connection.
+//to d mongodb & stores d connection.
 const mongoConnection = callback => {
-	MongoClient.connect('mongodb+srv://jeffonochie:Audr3y321@cluster0.x6ez3.mongodb.net/localshop?retryWrites=true&w=majority'
-	)
+	MongoClient.connect('mongodb+srv://jeffonochie:Audr3y321@cluster0.x6ez3.mongodb.net/localshop?retryWrites=true&w=majority',
+	{ useUnifiedTopology: true })
 	.then(client => {	//d client object returned gives us access to our database
 		console.log('CONNECTED');
 		_db = client.db();	//store a connection to our DB in _db. u can also pass a DB name to .db('name') & this will overide d db in d connection string above
 		callback();
 	})
 	.catch( err => {
-		console(err);
+		console.log(err);
 		throw err;
 	})
 };

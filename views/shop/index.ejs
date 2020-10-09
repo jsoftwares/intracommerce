@@ -87,11 +87,11 @@
                     <div class="four columns">
                         <div class="card">
                             <a href="/products/<%= product.id %>">
-                            <img src="img/<%= product.imageURL %>" class="course-image u-full-width">
+                            <img src="http://127.0.0.1:3000/img/<%= product.imageUrl %>" class="course-image u-full-width">
                         </a>
                             <div class="info-card">
 
-                                <a href="/products/<%= product.id %>">
+                                <a href="/products/<%= product._id %>">
                                     <h4>
                                         <%= product.title %>
                                     </h4>
@@ -106,8 +106,8 @@
                             you need  to pass that variable as an object as a 2nd argument to 
                             include('path_to_included_file', {product:product}) -->
                                 <form action="/cart" method="POST">
-                                    <button type="submit" class="u-full-width button-primary button input" data-id="<%= product.id %>">Add to Cart</button>
-                                    <input type="hidden" name="productId" value="<%= product.id %>">
+                                    <button type="submit" class="u-full-width button-primary button input" data-id="<%= product._id %>">Add to Cart</button>
+                                    <input type="hidden" name="productId" value="<%= product._id %>">
                                 </form>
                             </div>
                         </div>

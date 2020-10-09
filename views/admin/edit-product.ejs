@@ -14,7 +14,7 @@
                         </div>
                         <div class="form-control">
                             <label for="imageUrl">Image</label>
-                            <input type="text" id="imageUrl" value="<% if(editing){ %><%= product.imageURL %><%}%>" name="imageUrl" id="imageUrl">
+                            <input type="text" id="imageUrl" value="<% if(editing){ %><%= product.imageUrl %><%}%>" name="imageUrl" id="imageUrl">
                         </div>
                         <div class="form-control">
                             <label for="price">Price</label>
@@ -25,7 +25,7 @@
                             <textarea name="shortDesc" id="shortDesc" cols="30" rows="10"><% if(editing){ %><%= product.description %><%}%></textarea>
                         </div>
                         <% if(editing){ %>
-                            <input type="hidden" name="productId" value="<%= product.id %>">
+                            <input type="hidden" name="productId" value="<%= product._id %>">
                             <%}%>
                                 <button class="btn" type="submit"><% if(editing){ %> Edit Product <%}else {%> Add Product <%} %></button>
                     </form>

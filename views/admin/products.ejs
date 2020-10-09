@@ -16,7 +16,7 @@
                                     </h1>
                                 </header>
                                 <div class="card__image">
-                                    <img src="img/<%= product.imageURL %>" alt="<%= product.title %>">
+                                    <img src="http://127.0.0.1:3000/img/<%= product.imageUrl %>" alt="<%= product.title %>">
                                 </div>
                                 <div class="card__content">
                                     <h2 class="product__price">₦
@@ -28,9 +28,9 @@
                                 </div>
                                 <div class="card__actions">
                                     <!-- edit query string below is sent as a string not boolean -->
-                                    <a href="/edit-product/<%= product.id %>?edit=true" class="btn">Edit</a>
+                                    <a href="/edit-product/<%= product._id %>?edit=true" class="btn">Edit</a>
                                     <form action="/delete-product" method="POST">
-                                        <input type="hidden" name="productId" value="<%= product.id %>">
+                                        <input type="hidden" name="productId" value="<%= product._id %>">
                                         <button class="btn" type="submit">Delete</button>
                                     </form>
 
