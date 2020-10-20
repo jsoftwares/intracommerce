@@ -15,16 +15,21 @@ exports.storeProduct = (req, res, next) => {
     const description = req.body.shortDesc;
     const price = req.body.price;
 
-    const product = new Product(title, price, description, imageURL, null, req.user._id);
-    product.save()
+    const product = new Product({
+        title: title,
+        price: price,
+        imageUrl: imageURL,
+        description: description
+    });
+    product.save()  //mongoose gives us a save() method
         .then( result => {
             res.redirect('/admin-products');
         }).catch(err => console.log(err));
 }
 
 exports.getProducts = (req, res, next) => {
-    Product.fetchAll()
-        .then( (products) => {
+    Product.find()
+        .then( products => {
             res.render('admin/products', {
             prods: products,
             pageTitle: 'All Products',
@@ -66,8 +71,21 @@ exports.updateProduct = (req, res, next) => {
     const updatedDescription = req.body.shortDesc;
     const prodId = req.body.productId;
 
-    const product = new Product(updatedTitle, updatedPrice, updatedDescription, updatedImageUrl, prodId);
-    product.save()
+    Product.findById(prodId)
+    // Product.findByIdAndUpdate({_id:prodId}, {
+    //     title: updatedTitle,
+    //     price: updatedPrice,
+    //     imageUrl: updatedImageUrl,
+    //     description: updatedDescription
+    // })
+    .then( product => { //here we have a mongoose object & not just a product document, hence we can call mongoose methods on it.
+        product.title = updatedTitle;
+        product.price = updatedPrice;
+        product.imageUrl = updatedImageUrl;
+        product.description = updatedDescription;
+
+        return product.save();
+    })
         .then(result => {
             console.log('PRODUCT UPDATED');
             res.redirect('/admin-products');
@@ -78,7 +96,7 @@ exports.updateProduct = (req, res, next) => {
 exports.postDeleteProduct = (req, res, next) => {
     const prodId = req.body.productId;
     //call method in Model
-    Product.deleteById(prodId)
+    Product.findByIdAndRemove(prodId)
     .then( () => {
         res.redirect('/admin-products');
     })

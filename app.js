@@ -36,7 +36,7 @@ app.use(shopRoutes);
 app.use(errorController.get404);
 
 
-mongoose.connect('mongodb+srv://jeffonochie:Audr3y321@cluster0.x6ez3.mongodb.net/localshopv2?retryWrites=true&w=majority', 
+mongoose.connect('mongodb+srv://jeffonochie:Audr3y321@cluster0.x6ez3.mongodb.net/localshop?retryWrites=true&w=majority', 
 	{useNewUrlParser: true, useUnifiedTopology: true})
 .then( () => {
 	app.listen(3000);

@@ -1,9 +1,10 @@
 const Product = require('../models/product');
-// const Cart = require('../models/cart');
 
 exports.index = (req, res, next) => {
 
-    Product.fetchAll()
+//find() does not return a cursor but we can add .cursor().each() to loop through each product or .next() to
+//return d next set of products. It is important to use cursor() if we are loading large data from DB
+    Product.find()
         .then( products => {
             res.render('shop/index', {
             prods: products,
@@ -15,19 +16,19 @@ exports.index = (req, res, next) => {
 
 }
 
-// exports.allProducts = (req, res, next) => {
+exports.allProducts = (req, res, next) => {
 
-//     Product.findAll()
-//         .then( products => {
-//             res.render('shop/index', {
-//             prods: products,
-//             pageTitle: 'All Products',
-//             route: '/products'
-//             });
-//         })
-//         .catch( err => console.log(err));
+    Product.find()
+        .then( products => {
+            res.render('shop/index', {
+            prods: products,
+            pageTitle: 'All Products',
+            route: '/products'
+            });
+        })
+        .catch( err => console.log(err));
 
-// }
+}
 
 exports.showProduct = (req, res, next) => {
     const prodId = req.params.productId;
