@@ -88,10 +88,6 @@ exports.postCartDeleteProduct = (req, res, next) => {
 // }
 
 exports.postOrder = (req, res, next) => {
-    //get user cart, then cart products, then create new Order for user and add products to Order
-    //then empty the user's cart, then return order view
-
-    let userCart;
     req.user.addOrder()
     .then( result => {
         res.redirect('/orders');

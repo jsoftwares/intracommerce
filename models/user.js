@@ -102,13 +102,13 @@ class User {
 
 // USER ORDERS
 
-	//addOrder will not take any argument bcos the cart which is already embedded in the user has items that
-	//would form the order.
+	//addOrder will not take any argument bcos the cart which is already embedded in the user document 
+	//has items that would form the order.
 	addOrder()
 	{
 		const db = getDB();
 
-		return this.getCart()
+		return this.getCart()	//returns user-cart products with full details & quatities
 		.then( products => {
 			const order = {
 				items: products,
