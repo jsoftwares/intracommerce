@@ -19,7 +19,8 @@ exports.storeProduct = (req, res, next) => {
         title: title,
         price: price,
         imageUrl: imageURL,
-        description: description
+        description: description,
+        userId: req.user._id
     });
     product.save()  //mongoose gives us a save() method
         .then( result => {
