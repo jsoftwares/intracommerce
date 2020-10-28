@@ -24,6 +24,7 @@
                             <label for="shortDesc">Description</label>
                             <textarea name="shortDesc" id="shortDesc" cols="30" rows="10"><% if(editing){ %><%= product.description %><%}%></textarea>
                         </div>
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                         <% if(editing){ %>
                             <input type="hidden" name="productId" value="<%= product._id %>">
                             <%}%>

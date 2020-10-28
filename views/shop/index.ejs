@@ -107,8 +107,9 @@
                             include('path_to_included_file', {product:product}) -->
                             <% if(isAuthenticated){ %>
                                 <form action="/cart" method="POST">
-                                    <button type="submit" class="u-full-width button-primary button input" data-id="<%= product._id %>">Add to Cart</button>
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                     <input type="hidden" name="productId" value="<%= product._id %>">
+                                    <button type="submit" class="u-full-width button-primary button input" data-id="<%= product._id %>">Add to Cart</button>
                                 </form>
                             <% } %>
                             </div>
