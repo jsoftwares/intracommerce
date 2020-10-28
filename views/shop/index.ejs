@@ -105,10 +105,12 @@
                                 in that loop, the variable will not get passed to that include file. With EJS, 
                             you need  to pass that variable as an object as a 2nd argument to 
                             include('path_to_included_file', {product:product}) -->
+                            <% if(isAuthenticated){ %>
                                 <form action="/cart" method="POST">
                                     <button type="submit" class="u-full-width button-primary button input" data-id="<%= product._id %>">Add to Cart</button>
                                     <input type="hidden" name="productId" value="<%= product._id %>">
                                 </form>
+                            <% } %>
                             </div>
                         </div>
                         <!--.card-->

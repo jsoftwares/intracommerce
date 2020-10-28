@@ -5,7 +5,8 @@ exports.createProduct = (req, res, next) => {
     res.render('admin/edit-product', {
         pageTitle: 'Add Product',
         route: '/admin/add-product',
-        editing: null
+        editing: null,
+        isAuthenticated: req.session.isLoggedIn
     });
 }
 
@@ -20,7 +21,8 @@ exports.storeProduct = (req, res, next) => {
         price: price,
         imageUrl: imageURL,
         description: description,
-        userId: req.user._id
+        userId: req.user._id,
+        isAuthenticated: req.session.isLoggedIn
     });
     product.save()  //mongoose gives us a save() method
         .then( result => {
@@ -34,7 +36,8 @@ exports.getProducts = (req, res, next) => {
             res.render('admin/products', {
             prods: products,
             pageTitle: 'All Products',
-            route: '/products'
+            route: '/products',
+            isAuthenticated: req.session.isLoggedIn
             });
         })
         .catch( err => console.log(err));
@@ -55,7 +58,8 @@ exports.getEditProduct = (req, res, next) => {
                 pageTitle: 'Edit Product',
                 route: '/admin/edit-product',
                 editing: editMode,
-                product: product
+                product: product,
+                isAuthenticated: req.session.isLoggedIn
             });
             } else {
                 res.redirect('/admin-products');
