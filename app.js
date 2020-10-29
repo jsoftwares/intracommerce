@@ -3,6 +3,7 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const csrf = require('csurf');
+const flash = require('connect-flash');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
@@ -34,6 +35,7 @@ app.use(
 	session({ secret:'enigMa2 5f8efab49e312810f33cad84', resave:false, saveUninitialized: false, store: store})
 );
 app.use(csrfProtection);
+app.use(flash());
 
 // We user a middleware here to add a user to our request, we get the userId from session which persist
 //across diff request for a user
