@@ -12,7 +12,7 @@ const isAuth = require('../middleware/is-auth');
 
 router.get('/admin/products', isAuth, adminController.getProducts);
 
-router.get('/add-product', isAuth, adminController.createProduct);
+router.get('/admin/add-product', isAuth, adminController.createProduct);
 
 router.post('/add-product', isAuth, adminController.storeProduct);
 

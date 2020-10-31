@@ -26,12 +26,12 @@ exports.storeProduct = (req, res, next) => {
     });
     product.save()  //mongoose gives us a save() method
         .then( result => {
-            res.redirect('/admin-products');
+            res.redirect('/admin/products');
         }).catch(err => console.log(err));
 }
 
 exports.getProducts = (req, res, next) => {
-    Product.find()
+    Product.find({userId: req.user.id})
         .then( products => {
             res.render('admin/products', {
             prods: products,
@@ -47,13 +47,13 @@ exports.getProducts = (req, res, next) => {
 exports.getEditProduct = (req, res, next) => {
     const editMode = req.query.edit;
     if (editMode !== 'true') {
-        res.redirect('/admin-products');
+        return res.redirect('/admin/products');
     }
 
     const prodId = req.params.productId;
     Product.findById(prodId)
     .then( product => {
-            if (product !== null) {
+        if (product !== null) {
             res.render('admin/edit-product', {
                 pageTitle: 'Edit Product',
                 route: '/admin/edit-product',
@@ -61,9 +61,9 @@ exports.getEditProduct = (req, res, next) => {
                 product: product,
                 isAuthenticated: req.session.isLoggedIn
             });
-            } else {
-                res.redirect('/admin-products');
-            }
+        } else {
+            res.redirect('/admin-products');
+        }
     })
     .catch( err => console.log(err));
 
@@ -84,26 +84,33 @@ exports.updateProduct = (req, res, next) => {
     //     description: updatedDescription
     // })
     .then( product => { //here we have a mongoose object & not just a product document, hence we can call mongoose methods on it.
+
+        // Authorization- check if the product being edited was created by the logged in user.
+        if (product.userId.toString() !== req.user._id.toString()) {
+            return res.redirect('/admin/products');
+        }
+
         product.title = updatedTitle;
         product.price = updatedPrice;
         product.imageUrl = updatedImageUrl;
         product.description = updatedDescription;
 
-        return product.save();
+        return product.save()
+            .then(result => {
+                console.log('PRODUCT UPDATED');
+                res.redirect('/admin/products');
+            }).catch(err=>console.log(err));
     })
-        .then(result => {
-            console.log('PRODUCT UPDATED');
-            res.redirect('/admin-products');
-        })
-        .catch( err => console.log(err));
-}
+    .catch( err => console.log(err));
+};
 
 exports.postDeleteProduct = (req, res, next) => {
     const prodId = req.body.productId;
-    //call method in Model
-    Product.findByIdAndRemove(prodId)
-    .then( () => {
-        res.redirect('/admin-products');
-    })
-    .catch( err => console.log(err));
-}
+
+    // Product.findByIdAndRemove(prodId)
+    Product.deleteOne({_id: prodId, userId: req.user._id})  //only delete product with d prodId and product userId matching d logged in user 
+        .then( () => {
+            res.redirect('/admin/products');
+        })
+        .catch( err => console.log(err));
+};
