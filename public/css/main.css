@@ -233,6 +233,7 @@ form {
   border-radius: 3px;
   background: #b9c9ff;
   text-align: center;
+  font-size: 0.8rem;
 }
 
 .user-message--error {

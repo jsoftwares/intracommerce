@@ -7,22 +7,37 @@
         <div class="container">
             <%- include('../includes/navigation.ejs') %>
                 <main>
+
+                    <% if(errorMessage) { %> 
+                        <div class="user-message user-message--error"> <% errorMessage.forEach(error => { %>
+                            <%= error.msg %> <br>
+                        <% }) %> </div>
+                    <% } %>
+
                     <form class="product-form" action="<% if(editing){ %>/update-product<%}else {%>/add-product<%}%>" method="POST">
                         <div class="form-control">
                             <label for="title">Title</label>
-                            <input type="text" name="title" id="title" value="<% if(editing){ %><%= product.title %><%}%>" autofocus>
+                            <input 
+                                class="<%= validationErrors.find(e => e.param==='title') ? 'invalid':'' %>"
+                                type="text" name="title" id="title" value="<% if(editing || hasError){ %><%= product.title %><%}%>" autofocus>
                         </div>
                         <div class="form-control">
                             <label for="imageUrl">Image</label>
-                            <input type="text" id="imageUrl" value="<% if(editing){ %><%= product.imageUrl %><%}%>" name="imageUrl" id="imageUrl">
+                            <input 
+                                class="<%= validationErrors.find(e => e.param==='imageUrl') ? 'invalid':'' %>"
+                                type="text" id="imageUrl" value="<% if(editing || hasError){ %><%= product.imageUrl %><%}%>" name="imageUrl" id="imageUrl">
                         </div>
                         <div class="form-control">
                             <label for="price">Price</label>
-                            <input type="text" value="<% if(editing){ %><%= product.price %><%}%>" name="price" id="price">
+                            <input
+                                class="<%= validationErrors.find(e => e.param==='price') ? 'invalid':'' %>" 
+                                type="text" value="<% if(editing || hasError){ %><%= product.price %><%}%>" name="price" id="price">
                         </div>
                         <div class="form-control">
                             <label for="shortDesc">Description</label>
-                            <textarea name="shortDesc" id="shortDesc" cols="30" rows="10"><% if(editing){ %><%= product.description %><%}%></textarea>
+                            <textarea 
+                            class="<%= validationErrors.find(e => e.param==='shortDesc') ? 'invalid':'' %>"
+                            name="shortDesc" id="shortDesc" cols="30" rows="10"><% if(editing || hasError){ %><%= product.description %><%}%></textarea>
                         </div>
                         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                         <% if(editing){ %>
