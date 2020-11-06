@@ -3,6 +3,18 @@ const { validationResult } = require('express-validator');
 const Product = require('../models/product');
 
 
+const errorHandler  = err => {
+    const error = new Error(err);
+    error.httpStatusCode = 500;     //we can add fields to our error
+    return next(error);
+    /**When we call next with an argument, we actually let Express know that an arror occurred & 
+    it will skip all other middleware & move right-away to an error handling middleware. We will
+    define this at the bottom of our APP.JS 
+    NOTE: to throw this error inside of SYNCHRONOUS code, we can use 'throw new Error('Error MSG')
+    but in ASYNCHRONOUS code eg inside Promise THEN, CATCH, we do so like we did inside catch block
+    'next(new Error(err))' - you have to use next() around the error **/
+};
+
 exports.createProduct = (req, res, next) => {
     res.render('admin/edit-product', {
         pageTitle: 'Add Product',
@@ -11,7 +23,7 @@ exports.createProduct = (req, res, next) => {
         editing: false,
         // isAuthenticated: req.session.isLoggedIn,
         errorMessage: null,
-            validationErrors: []
+        validationErrors: []
     });
 }
 
@@ -51,11 +63,12 @@ exports.storeProduct = (req, res, next) => {
     product.save()  //mongoose gives us a save() method
         .then( result => {
             res.redirect('/admin/products');
-        }).catch(err => console.log(err));
+        })
+        .catch(err => this.errorHandler(err));
 }
 
 exports.getProducts = (req, res, next) => {
-    Product.find({userId: req.user.id})
+    Product.find({userId: req.user.id}) //searching for products created by a particular user.
         .then( products => {
             res.render('admin/products', {
             prods: products,
@@ -64,7 +77,10 @@ exports.getProducts = (req, res, next) => {
             isAuthenticated: req.session.isLoggedIn
             });
         })
-        .catch( err => console.log(err));
+        .catch( err => {
+            console.log(err);
+            this.errorHandler(err);
+        });
 }
 
 
@@ -74,7 +90,6 @@ exports.getEditProduct = (req, res, next) => {
     if (editMode !== 'true') {
         return res.redirect('/admin/products');
     }
-
     const prodId = req.params.productId;
     Product.findById(prodId)
     .then( product => {
@@ -93,7 +108,10 @@ exports.getEditProduct = (req, res, next) => {
             res.redirect('/admin-products');
         }
     })
-    .catch( err => console.log(err));
+    .catch( err => {
+        console.log(err);
+        this.errorHandler(err);
+    });
 
 }
 
@@ -148,7 +166,10 @@ console.log(product)
                 res.redirect('/admin/products');
             }).catch(err=>console.log(err));
     })
-    .catch( err => console.log(err));
+    .catch( err => {
+        console.log(err);
+        this.errorHandler(err);
+    });
 };
 
 exports.postDeleteProduct = (req, res, next) => {
@@ -159,5 +180,8 @@ exports.postDeleteProduct = (req, res, next) => {
         .then( () => {
             res.redirect('/admin/products');
         })
-        .catch( err => console.log(err));
+        .catch( err => {
+        console.log(err);
+        this.errorHandler(err);
+    });
 };

@@ -8,7 +8,8 @@ const flash = require('connect-flash');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
-const errorController = require('./controllers/errors');
+
+const errorController = require('./controllers/errorsController');
 
 const User = require('./models/user');
 
@@ -37,18 +38,24 @@ app.use(
 app.use(csrfProtection);
 app.use(flash());
 
-// We user a middleware here to add a user to our request, we get the userId from session which persist
+// We use this middleware here to add a user to our request, we get the userId from session which exist
 //across diff request for a user
 app.use((req, res, next) => {
 	if (!req.session.user) {
-		return next();	//if a session doesn;t exist in the req, dont find a user just transfer control to d next middleware
+		return next();	//if a session doesn't exist in the req, dont find a user just transfer control to d next middleware
 	}
 	User.findById(req.session.user._id)
 	.then(user => {
-		//here we add new keys to the request data and store in our request
+		if (!user) {
+			return next('No valid user found'); //exit the middleware if user in null
+		}
+		//here we store d found mongoose USER object with the keys 'user' in the request stream
 		req.user = user;
 		next();
-	}).catch(err => console.log(err));
+	})
+	.catch(err => {
+		next(new Error(err));
+	});
 })
 
 //Using locals to add variables that should be sent to all views for all requests using this middleware
@@ -62,7 +69,17 @@ app.use(adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
 
+app.get('/500', errorController.get500);
+
 app.use(errorController.get404);
+
+/**Normally one would expect that this middleware cannot be reached because we have our catch all 404 middle-
+ware just above, but Express also knows a specail middleware called - Error handling middleware which it invokes
+when we call next(error) in our code and pass error as argument to it **/
+app.use( (error, req, res, next) => {
+ return res.redirect('/500');
+})
+
 
 
 mongoose.connect(MONGODB_URI, 
