@@ -47,7 +47,7 @@ app.use((req, res, next) => {
 	User.findById(req.session.user._id)
 	.then(user => {
 		if (!user) {
-			return next('No valid user found'); //exit the middleware if user in null
+			return next(); //exit the middleware if user in null
 		}
 		//here we store d found mongoose USER object with the keys 'user' in the request stream
 		req.user = user;
