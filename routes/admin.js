@@ -20,22 +20,22 @@ router.post('/add-product', isAuth, [
 		.trim()
 		.isString().withMessage('Title should contain only String.')
 		.isLength({min: 3, max: 90}).withMessage('Title should be a between 3 to 90 characters.'),
-	body('imageUrl', 'Image should be a valid URL.').isURL(),
+	// body('imageUrl', 'Image should be a valid URL.').isURL(),
 	body('price', 'Price should be a floating value').isFloat(),
 	body('shortDesc', 'Description should be a between 5 to 300 characters.').isLength({min:5, max:300}),
 	], adminController.storeProduct);
 
 router.get('/edit-product/:productId', isAuth, adminController.getEditProduct);
 
-router.post('/update-product', [
+router.post('/update-product', isAuth, [
 	body('title')
 		.trim()
 		.isAscii().withMessage('Title should contain only String.')
 		.isLength({min: 3, max: 90}).withMessage('Title should be a between 3 to 90 characters.'),
-	body('imageUrl', 'Image should be a valid URL.').isURL(),
+	// body('imageUrl', 'Image should be a valid URL.').isURL(),
 	body('price', 'Price should be a floating value').isFloat(),
 	body('shortDesc', 'Description should be a between 5 to 300 characters.').isLength({min:5, max:300}),
-	], isAuth, adminController.updateProduct);
+	], adminController.updateProduct);
 
 router.post('/delete-product', isAuth, adminController.postDeleteProduct);
 

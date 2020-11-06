@@ -3,7 +3,7 @@ const { validationResult } = require('express-validator');
 const Product = require('../models/product');
 
 
-const errorHandler  = err => {
+const errorHandler  = (err, next) => {
     const error = new Error(err);
     error.httpStatusCode = 500;     //we can add fields to our error
     return next(error);
@@ -29,7 +29,7 @@ exports.createProduct = (req, res, next) => {
 
 exports.storeProduct = (req, res, next) => {
     const title = req.body.title;
-    const imageURL = req.body.imageUrl;
+    const imageURL = req.body.image;
     const description = req.body.shortDesc;
     const price = req.body.price;
 
@@ -58,14 +58,16 @@ exports.storeProduct = (req, res, next) => {
         imageUrl: imageURL,
         description: description,
         userId: req.user._id,
-        isAuthenticated: req.session.isLoggedIn
     });
     product.save()  //mongoose gives us a save() method
-        .then( result => {
-            res.redirect('/admin/products');
-        })
-        .catch(err => this.errorHandler(err));
-}
+    .then( result => {
+        res.redirect('/admin/products');
+    })
+    .catch( err => {
+        console.log(err);
+        errorHandler(err, next)
+    });
+};
 
 exports.getProducts = (req, res, next) => {
     Product.find({userId: req.user.id}) //searching for products created by a particular user.
@@ -79,7 +81,7 @@ exports.getProducts = (req, res, next) => {
         })
         .catch( err => {
             console.log(err);
-            this.errorHandler(err);
+            errorHandler(err, next);
         });
 }
 
@@ -110,7 +112,7 @@ exports.getEditProduct = (req, res, next) => {
     })
     .catch( err => {
         console.log(err);
-        this.errorHandler(err);
+        errorHandler(err, next);
     });
 
 }
@@ -168,7 +170,7 @@ console.log(product)
     })
     .catch( err => {
         console.log(err);
-        this.errorHandler(err);
+        errorHandler(err, next);
     });
 };
 
@@ -182,6 +184,6 @@ exports.postDeleteProduct = (req, res, next) => {
         })
         .catch( err => {
         console.log(err);
-        this.errorHandler(err);
+        errorHandler(err, next);
     });
 };

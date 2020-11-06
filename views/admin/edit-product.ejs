@@ -14,7 +14,7 @@
                         <% }) %> </div>
                     <% } %>
 
-                    <form class="product-form" action="<% if(editing){ %>/update-product<%}else {%>/add-product<%}%>" method="POST">
+                    <form class="product-form" action="<% if(editing){ %>/update-product<%}else {%>/add-product<%}%>" method="POST" enctype="multipart/form-data">
                         <div class="form-control">
                             <label for="title">Title</label>
                             <input 
@@ -22,10 +22,11 @@
                                 type="text" name="title" id="title" value="<% if(editing || hasError){ %><%= product.title %><%}%>" autofocus>
                         </div>
                         <div class="form-control">
-                            <label for="imageUrl">Image</label>
-                            <input 
+                            <label for="image">Image</label>
+                            <input type="file" name="image" id="image">
+                            <!-- <input 
                                 class="<%= validationErrors.find(e => e.param==='imageUrl') ? 'invalid':'' %>"
-                                type="text" id="imageUrl" value="<% if(editing || hasError){ %><%= product.imageUrl %><%}%>" name="imageUrl" id="imageUrl">
+                                type="text" id="imageUrl" value="<% if(editing || hasError){ %><%= product.imageUrl %><%}%>" name="imageUrl" id="imageUrl"> -->
                         </div>
                         <div class="form-control">
                             <label for="price">Price</label>
@@ -37,7 +38,7 @@
                             <label for="shortDesc">Description</label>
                             <textarea 
                             class="<%= validationErrors.find(e => e.param==='shortDesc') ? 'invalid':'' %>"
-                            name="shortDesc" id="shortDesc" cols="30" rows="10"><% if(editing || hasError){ %><%= product.description %><%}%></textarea>
+                            name="shortDesc" id="shortDesc" cols="30" rows="10"><% if(editing || hasError){ %><%= product.shortDesc %><%}%></textarea>
                         </div>
                         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                         <% if(editing){ %>
