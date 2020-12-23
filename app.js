@@ -6,6 +6,8 @@ const csrf = require('csurf');
 const flash = require('connect-flash');
 const multer = require('multer');
 
+const config = require('./utils/development.json');
+
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
@@ -19,7 +21,7 @@ const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 
 
-const MONGODB_URI = 'mongodb+srv://jeffonochie:Audr3y321@cluster0.x6ez3.mongodb.net/localshop';
+const MONGODB_URI = config.mongodbURI;
 const app = express();
 const store = new MongoDBStore({
 	uri: MONGODB_URI,
