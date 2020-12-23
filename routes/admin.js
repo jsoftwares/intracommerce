@@ -15,12 +15,11 @@ router.get('/admin/products', isAuth, adminController.getProducts);
 
 router.get('/admin/add-product', isAuth, adminController.createProduct);
 
-router.post('/add-product', isAuth, [
+router.post('/admin/add-product', isAuth, [
 	body('title')
 		.trim()
 		.isString().withMessage('Title should contain only String.')
 		.isLength({min: 3, max: 90}).withMessage('Title should be a between 3 to 90 characters.'),
-	// body('imageUrl', 'Image should be a valid URL.').isURL(),
 	body('price', 'Price should be a floating value').isFloat(),
 	body('shortDesc', 'Description should be a between 5 to 300 characters.').isLength({min:5, max:300}),
 	], adminController.storeProduct);
@@ -32,7 +31,6 @@ router.post('/update-product', isAuth, [
 		.trim()
 		.isAscii().withMessage('Title should contain only String.')
 		.isLength({min: 3, max: 90}).withMessage('Title should be a between 3 to 90 characters.'),
-	// body('imageUrl', 'Image should be a valid URL.').isURL(),
 	body('price', 'Price should be a floating value').isFloat(),
 	body('shortDesc', 'Description should be a between 5 to 300 characters.').isLength({min:5, max:300}),
 	], adminController.updateProduct);

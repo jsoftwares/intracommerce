@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 
 const Product = require('../models/product');
+const fileHelper = require('../utils/file');
 
 
 const errorHandler  = (err, next) => {
@@ -28,13 +29,19 @@ exports.createProduct = (req, res, next) => {
 }
 
 exports.storeProduct = (req, res, next) => {
+    console.log(req.file);
     const title = req.body.title;
-    const imageURL = req.body.image;
+    const image = req.file; //file is an object containing info about the uploaded file from multer
     const description = req.body.shortDesc;
     const price = req.body.price;
 
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
+    let errors = validationResult(req);
+
+    console.log(errors);
+
+    //if !image ie multer declined d incoming file
+    if (!image) {
+        // errors = [{msg:'File type is invalid'}];
         return res.status(422).render('admin/edit-product', {
             pageTitle: 'Add Product',
             route: '/admin/add-product',
@@ -42,7 +49,24 @@ exports.storeProduct = (req, res, next) => {
             hasError: true,
             product: {
                 title: title,
-                imageUrl: imageURL,
+                shortDesc: description,
+                price: price
+            },
+            errorMessage: [{msg:'Invalid image type'}],
+            validationErrors: []
+
+        });
+    }
+
+    if (!errors.isEmpty()) {
+        console.log(errors);
+        return res.status(422).render('admin/edit-product', {
+            pageTitle: 'Add Product',
+            route: '/admin/add-product',
+            editing: false,
+            hasError: true,
+            product: {
+                title: title,
                 shortDesc: description,
                 price: price
             },
@@ -52,10 +76,11 @@ exports.storeProduct = (req, res, next) => {
         });
     }
 
+    // const imageUrl = image.path.replace('\', '/');
     const product = new Product({
         title: title,
         price: price,
-        imageUrl: imageURL,
+        imageUrl: image.path,
         description: description,
         userId: req.user._id,
     });
@@ -65,7 +90,7 @@ exports.storeProduct = (req, res, next) => {
     })
     .catch( err => {
         console.log(err);
-        errorHandler(err, next)
+        // errorHandler(err, next)
     });
 };
 
@@ -76,7 +101,7 @@ exports.getProducts = (req, res, next) => {
             prods: products,
             pageTitle: 'All Products',
             route: '/products',
-            isAuthenticated: req.session.isLoggedIn
+            // isAuthenticated: req.session.isLoggedIn
             });
         })
         .catch( err => {
@@ -95,11 +120,18 @@ exports.getEditProduct = (req, res, next) => {
     const prodId = req.params.productId;
     Product.findById(prodId)
     .then( product => {
-        if (product !== null) {
+        if (product) {
             res.render('admin/edit-product', {
                 pageTitle: 'Edit Product',
                 route: '/admin/edit-product',
-                product: product,
+                product: {
+                _id: product._id,
+                title: product.title,
+                imageUrl: product.imageUrl,
+                shortDesc: product.description,
+                price: product.price,
+                userId: product.userId
+            },
                 editing: true,
                 hasError: false,
                 // isAuthenticated: req.session.isLoggedIn,
@@ -119,7 +151,7 @@ exports.getEditProduct = (req, res, next) => {
 
 exports.updateProduct = (req, res, next) => {
     const updatedTitle = req.body.title;
-    const updatedImageUrl = req.body.imageUrl;
+    const image = req.file;
     const updatedPrice = req.body.price;
     const updatedDescription = req.body.shortDesc;
     const prodId = req.body.productId;
@@ -133,7 +165,6 @@ exports.updateProduct = (req, res, next) => {
             hasError: true,
             product: {
                 title: updatedTitle,
-                imageUrl: updatedImageUrl,
                 description: updatedDescription,
                 price: updatedPrice,
                 _id: prodId
@@ -151,16 +182,35 @@ exports.updateProduct = (req, res, next) => {
     //     description: updatedDescription
     // })
     .then( product => { //here we have a mongoose object & not just a product document, hence we can call mongoose methods on it.
-console.log(product)
         // Authorization- check if the product being edited was created by the logged in user.
+        if (!product) {
+            return res.status(422).render('admin/edit-product', {
+                pageTitle: 'Edit Product',
+                route: '/admin/add-product',
+                editing: true,
+                hasError: true,
+                product: {
+                    title: updatedTitle,
+                    description: updatedDescription,
+                    price: updatedPrice,
+                    _id: prodId
+                },
+                errorMessage: errors.array().msg.push('Product not found.'),
+                validationErrors: errors.array()
+            });
+        }
         if (product.userId.toString() !== req.user._id.toString()) {
             return res.redirect('/admin/products');
         }
 
         product.title = updatedTitle;
         product.price = updatedPrice;
-        product.imageUrl = updatedImageUrl;
         product.description = updatedDescription;
+        if (image) {
+            fileHelper.deleteFile(product.imageUrl);    // we dont wait for dis unlink operation to conplete b4 we continue to update this file. If that was d case we'd pass a callback that takes ERROR as argurment as a 2nd parameter
+            product.imageUrl = image.path;
+            //delete old image
+        }
 
         return product.save()
             .then(result => {
@@ -177,13 +227,22 @@ console.log(product)
 exports.postDeleteProduct = (req, res, next) => {
     const prodId = req.body.productId;
 
-    // Product.findByIdAndRemove(prodId)
-    Product.deleteOne({_id: prodId, userId: req.user._id})  //only delete product with d prodId and product userId matching d logged in user 
-        .then( () => {
+    Product.findById(prodId)
+    .then(product => {
+        if (!product) {
+            return next(new Error('Product not found.'));
+        }
+        fileHelper.deleteFile(product.imageUrl);
+        return Product.deleteOne({_id: prodId, userId: req.user._id})  //only delete product with d prodId and product userId matching d logged in user 
+    })
+    .then( () => {
             res.redirect('/admin/products');
         })
         .catch( err => {
         console.log(err);
         errorHandler(err, next);
     });
+    
+    
+        
 };
