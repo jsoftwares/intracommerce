@@ -207,7 +207,7 @@ exports.updateProduct = (req, res, next) => {
         product.price = updatedPrice;
         product.description = updatedDescription;
         if (image) {
-            fileHelper.deleteFile(product.imageUrl);    // we dont wait for dis unlink operation to conplete b4 we continue to update this file. If that was d case we'd pass a callback that takes ERROR as argurment as a 2nd parameter
+            fileHelper.deleteFile(product.imageUrl);    // we dont wait for this unlink operation to conplete b4 we continue to update this file. If that was the case we'd pass a callback that takes ERROR as argurment as a 2nd parameter
             product.imageUrl = image.path;
             //delete old image
         }
