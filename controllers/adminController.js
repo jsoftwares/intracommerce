@@ -224,23 +224,26 @@ exports.updateProduct = (req, res, next) => {
     });
 };
 
-exports.postDeleteProduct = (req, res, next) => {
-    const prodId = req.body.productId;
+exports.deleteProduct = (req, res, next) => {
+    // const prodId = req.body.productId;
+    const prodId = req.params.productId;
 
     Product.findById(prodId)
     .then(product => {
         if (!product) {
             return next(new Error('Product not found.'));
         }
-        fileHelper.deleteFile(product.imageUrl);
+        fileHelper.deleteFile(product.imageUrl);    //delete image from storage
         return Product.deleteOne({_id: prodId, userId: req.user._id})  //only delete product with d prodId and product userId matching d logged in user 
     })
     .then( () => {
-            res.redirect('/admin/products');
+            // res.redirect('/admin/products');
+            res.status(200).json({message: 'Product deleted.'});
         })
         .catch( err => {
         console.log(err);
-        errorHandler(err, next);
+        // errorHandler(err, next);
+        res.status(500).json({message: 'Delete action failed.'});
     });
     
     

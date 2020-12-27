@@ -29,11 +29,11 @@
                                 <div class="card__actions">
                                     <!-- edit query string below is sent as a string not boolean -->
                                     <a href="/edit-product/<%= product._id %>?edit=true" class="btn">Edit</a>
-                                    <form action="/delete-product" method="POST">
+                                    <!-- <form action="/delete-product" method="POST"> -->
                                         <input type="hidden" name="productId" value="<%= product._id %>">
                                         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                                        <button class="btn" type="submit">Delete</button>
-                                    </form>
+                                        <button class="btn" type="button" onClick="deleteProduct(this)">Delete</button>
+                                   <!--  </form> -->
 
                                 </div>
                             </article>
@@ -44,3 +44,4 @@
                         <% } %>
             </main>
             <%- include('../includes/footer.ejs') %>
+            <script src="/js/admin.js"></script>
