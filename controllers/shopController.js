@@ -6,6 +6,8 @@ const PDFDocument = require('pdfkit');  //it exposes a PDF document constructor.
 const Product = require('../models/product');
 const Order = require('../models/order');
 
+const ITEMS_PER_PAGE = 2;
+
 
 const errorHandler  = (err, next) => {
     const error = new Error(err);
@@ -18,13 +20,27 @@ exports.index = (req, res, next) => {
 
 //find() does not return a cursor but we can add .cursor().each() to loop through each product or .next() to
 //return d next set of products. It is important to use cursor() if we are loading large data from DB
-    Product.find()
-        .then( products => {
+//skip() returns a cursor & we use it with mongoose to skip x-products when retrieving from DB
+    const page = +req.query.page || 1;
+    let productsCount;
+    Product.find().countDocuments()
+        .then( numProducts => {
+            productsCount = numProducts;
+            return Product.find().skip((page - 1) * ITEMS_PER_PAGE)
+            .limit(ITEMS_PER_PAGE);
+        }).then( products => {
             res.render('shop/index', {
                 prods: products,
                 pageTitle: 'Shop',
                 route: '/',
-                // isAuthenticated: req.session.isLoggedIn
+                // isAuthenticated: req.session.isLoggedIn,
+                totalProducts: productsCount,
+                currentPage: page,
+                hasNextPage: ITEMS_PER_PAGE * page < productsCount,
+                hasPrevPage: page > 1,
+                nextPage: page + 1,
+                prevPage: page - 1,
+                lastPage: Math.ceil(productsCount / ITEMS_PER_PAGE)
             });
         })
         .catch( err => console.log(err));
